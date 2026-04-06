@@ -1,0 +1,26 @@
+<nav class="navbar navbar-expand navbar-dark bg-primary mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">
+      <img src="acme_logo.png" width="200" alt="ACME Logo">
+    </a>
+    <span class="navbar-text h4 mb-0 text-white">
+      {{ title() }}
+    </span>
+  </div>
+</nav>
+
+<div class="container-fluid">
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+      <div class="row align-items-center">
+        <div class="col-auto">
+          <label class="form-label mb-0">Filtrar por:</label>
+        </div>
+        <div class="col-md-3">
+          <input type="text" class="form-control" placeholder="Escribe para buscar...">
+        </div>
+      </div>
+    </div>
+  </div>
+  <app-product-list [datos]="products"></app-product-list>
+</div>
