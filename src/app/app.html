@@ -12,15 +12,16 @@
 <div class="container-fluid">
   <div class="card mb-4 shadow-sm">
     <div class="card-body">
-      <div class="row align-items-center">
-        <div class="col-auto">
-          <label class="form-label mb-0">Filtrar por:</label>
+      <div class="row">
+        <div class="col-md-2"> Filtrar por: </div>
+        <div class="col-md-2">
+          <input type="text" [(ngModel)]="listFilter">
         </div>
-        <div class="col-md-3">
-          <input type="text" class="form-control" placeholder="Escribe para buscar...">
+        <div class="col-md-8">
+          Filtrado por: {{listFilter()}}
         </div>
       </div>
     </div>
   </div>
-  <app-product-list [datos]="products"></app-product-list>
+  <app-product-list [datos]="filteredProducts()"></app-product-list>
 </div>

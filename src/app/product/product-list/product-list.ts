@@ -8,5 +8,10 @@ import { Product } from '../../product';
   styleUrl: './product-list.css',
 })
 export class ProductList {
-  @Input('datos') products: Product[] = [];  
+  @Input('datos') products: Product[] = [];
+  
+  showImage : boolean = true;
+  toggleImage(): void {
+    this.showImage = !this.showImage;
+  }
 }

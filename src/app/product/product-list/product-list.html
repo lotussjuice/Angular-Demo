@@ -8,10 +8,10 @@
             <table class="table table-hover align-middle">
                 <thead class="table-light">
                     <tr>
-                        <th>
-                            <button class="btn btn-primary" style="width: 50%;">
-                                <i class="bi bi-image" style="font-size: 1rem;"></i>
-                                Imagenes
+                        <th class="text-center">
+                            <button class="btn btn-primary" style="width: 50%;" (click)="toggleImage()">
+                                <i class="bi bi-eye" style="font-size: 1rem;"></i>
+                                {{ showImage ? 'Ocultar imágenes' : 'Mostrar imágenes'}}
                             </button>
                         </th>
                         <th>Producto</th>
@@ -24,15 +24,17 @@
                 <tbody>
                     @for (producto of products; track producto.productId){
                     <tr>
-                        <td>
-                            <img [src]="producto.imageUrl" alt="{{ producto.productName }}" class="img-thumbnail"
-                                style="max-width: 100px;">
-                        </td>
-                        <td>{{ producto.productName }}</td>
-                        <td>{{ producto.productCode }}</td>
-                        <td>{{ producto.releaseDate }}</td>
-                        <td>{{ producto.price }}</td>
-                        <td>{{ producto.starRating }}</td>
+                            <td class="text-center">
+                                @if (showImage) {
+                                    <img [src]="producto.imageUrl" alt="{{ producto.productName }}" class="img-thumbnail"
+                                        style="max-width: 200px;">
+                                }
+                            </td>
+                            <td>{{ producto.productName }}</td>
+                            <td>{{ producto.productCode }}</td>
+                            <td>{{ producto.releaseDate }}</td>
+                            <td>{{ producto.price }}</td>
+                            <td>{{ producto.starRating }}</td>
                     </tr>
                     }
                 </tbody>
