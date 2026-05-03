@@ -134,37 +134,18 @@ app.delete("/productos/:id", (req, res) => {
   });
 });
 
-// Cambiar todo de un producto
-app.put("/productos/:id", (req, res) => {
-  const {
-    productName,
-    productCode,
-    releaseDate,
-    price,
-    description,
-    starRating,
-  } = req.body;
-  const sql = `UPDATE productos SET productName = ?, productCode = ?, releaseDate = ?,
-    price = ?, description = ?, starRating = ? WHERE productId = ?`;
-  conn.query(
-    sql,
-    [
-      productName,
-      productCode,
-      releaseDate,
-      parseInt(price),
-      description,
-      parseFloat(starRating),
-      req.params.id,
-    ],
-    (err, result) => {
-      if (err) throw err;
-      res.status(200).json({
-        ok: true,
-        mensaje: "Producto actualizado correctamente",
-      });
-    },
-  );
+// Actualiza un producto específico en la BD
+app.put('/productos/:id', (req, res) => {
+    const { name, code, date, price, description, rate } = req.body;
+    const sql = `UPDATE productos SET productName = ?, productCode = ?, releaseDate = ?, price = ?, description = ?, starRating = ? WHERE productId = ?`;
+    conn.query(
+        sql, [name, code, date, parseInt(price), description, parseInt(rate), req.params.id], (err, result) => {
+            if (err) throw err;
+            res.status(200).json({
+                ok: true,
+                mensaje: 'Producto actualizado correctamente'
+            });
+        });
 });
 
 // Cambiar imágen
@@ -218,6 +199,18 @@ app.put("/upload/productos/:id", (req, res) => {
         ok: true,
         mensaje: "Archivo subido y producto actualizado correctamente",
       });
+    });
+  });
+});
+
+app.get('/existeproducto/:code', (req, res) => {
+  const sql = 'SELECT * FROM productos WHERE productCode = ?';
+  conn.query(sql, [req.params.code], (err, result) => {
+    if(err) throw err;
+    res.status(200).json({
+      ok: true,
+      data: results[0],
+      existe: results.length > 0
     });
   });
 });

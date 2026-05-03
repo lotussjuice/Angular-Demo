@@ -1,0 +1,87 @@
+<div class="modal fade show d-block" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form [formGroup]="formProduct" (ngSubmit)="saveData()" novalidate>
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Crear Producto</h4>
+                    <button type="button" class="close" data-dismiss="modal" (click)="ocultarModal()">
+                        &times;
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-group row">
+                        <label class="col-2 col-form-label">Nombre</label>
+                        <div class="col-md-10">
+                            <input formControlName="name" class="form-control" placeholder="Nombre" type="text">
+                            @if(formProduct.get('name')?.errors &&
+                            (formProduct.get('name')?.touched || 
+                            formProduct.get('name')?.dirty)){
+                                <div class="alert alert-danger">
+                                    El nombre del producto es requerido.
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Codigo -->
+                    <div class="form-group row">
+                        <label class="col-2 col-form-label">Código</label>
+                        <div class="col-md-10">
+                            <input formControlName="code" class="form-control" placeholder="Código" type="text">
+                            @if(formProduct.get('code')?.pending){
+                                <span class="text-info"> Buscando... </span>
+                            }
+                            @if (formProduct.get('code')?.errors && formProduct.get('code')?.errors?.['codeExists']) {
+                                <div class="alert alert-danger">
+                                    El código del producto ya existe.
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Fecha de Registro -->
+                    <div class="form-group row">
+                        <label class="col-2 col-form-label">Fecha</label>
+                        <div class="col-md-10">
+                            <input formControlName="date" type="date" class="form-control"
+                                placeholder="Fecha de Registro">
+                        </div>
+                    </div>
+
+                    <!-- Precio del Producto -->
+                    <div class="form-group row">
+                        <label class="col-2 col-form-label">Precio</label>
+                        <div class="col-md-10">
+                            <input formControlName="price" type="number" class="form-control" placeholder="Precio">
+                        </div>
+                    </div>
+
+                    <!-- Rating -->
+                    <div class="form-group row">
+                        <label class="col-2 col-form-label">Rating</label>
+                        <div class="col-md-10">
+                            <input formControlName="rating" type="number" class="form-control" placeholder="Rating">
+                        </div>
+                    </div>
+
+                    <!-- Descripcion --> 
+                    <div class="form-group row">
+                        <label class="col-2 col-form-label">Descripción</label>
+                        <div class="col-md-10">
+                            <textarea formControlName="description" class="form-control" placeholder="Descripción"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" [disabled]="formProduct.invalid" class="btn btn-primary">Guardar</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"
+                        (click)="ocultarModal()">Cerrar</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>

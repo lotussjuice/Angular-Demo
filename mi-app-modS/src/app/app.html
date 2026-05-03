@@ -21,6 +21,11 @@
           Filtrado por: {{listFilter()}}
         </div>
         <div class="col-md-2">
+          <button class="btn btn-primary" (click)="abrirModal()">
+            Crear Producto
+          </button>
+        </div>
+        <div class="col-md-2">
           <button class="btn btn-primary" (click)="toggleChildren()">
             <i class="bi bi-eye"></i>
             {{ showChildren() ? "Ocultar" : "Mostrar" }} Hijo
@@ -32,22 +37,12 @@
   <div class="row">
     <div class="col-md-2"></div>
   </div>
+  @if(isModalOpen()) {
+  <app-modal-add (close)="cerrarModal()"></app-modal-add>
+  }
   @if(showChildren()){
-  <app-product-list [datos]="filteredProducts()"></app-product-list>
+  <app-product-list [datos]="filteredProducts()"
+    (updatedProducts)="this.productService.products.set($event)">
+  </app-product-list>
   }
   <br>
-  <div class="card card-body">
-    @if (weatherData()){
-    <h1 class="h4">
-      Datos del clima para {{ weatherData().name }}
-      @for (i of weatherData().weather; track $index){
-      <img src="http://openweathermap.org/img/w/{{ i.icon }}.png" alt="{{ i.description }}" width="100px"
-        height="100px">
-      }
-    </h1>
-    <p>Ciudad: {{ weatherData().name }}</p>
-    <p>Temperatura: {{ weatherData().main.temp }}°C</p>
-    <p>Humedad: {{ weatherData().main.humidity }}%</p>
-    }
-  </div>
-</div>
