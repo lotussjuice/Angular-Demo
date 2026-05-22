@@ -6,7 +6,7 @@ import {
   OnDestroy,
   output,
 } from "@angular/core";
-import { Product } from "../../interfaces/product";
+import { Product } from "../../../interfaces/product";
 import { Star } from "./star/star";
 import {
   UpperCasePipe,
@@ -14,9 +14,9 @@ import {
   DatePipe,
   CurrencyPipe,
 } from "@angular/common";
-import { ImagePipe } from "../../../../shared/image-pipe";
+import { ImagePipe } from "../../../../../shared/image-pipe";
 import { switchMap } from "rxjs";
-import { ProductService } from "../../services/product";
+import { ProductService } from "../../../services/product";
 
 @Component({
   selector: "app-product-list",

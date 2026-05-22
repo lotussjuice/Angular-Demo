@@ -14,8 +14,13 @@ export class ProductService {
   constructor(private http: HttpClient) {}
   
   getProducts(): Observable<Product[]> {
-    console.log('Fetching products from API...');
-    return this.http.get<Product[]>(`http://localhost:3000/productos`).pipe(
+    let token = localStorage.getItem("token") || '';
+    console.log('Fetching products from API with token:', token);
+    return this.http.get<Product[]>(`http://localhost:3000/productos`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }).pipe(
       map((resp: any) => resp.productos)
     );
   }

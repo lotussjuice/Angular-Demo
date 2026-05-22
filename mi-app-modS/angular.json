@@ -62,7 +62,8 @@
               "buildTarget": "mi-app-modS:build:production"
             },
             "development": {
-              "buildTarget": "mi-app-modS:build:development"
+              "buildTarget": "mi-app-modS:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

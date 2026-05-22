@@ -3,8 +3,21 @@ var mysql = require("mysql2");
 var fireUpload = require("express-fileupload");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-
+var bcrypt = require("bcrypt");
 var app = express();
+
+var jwt = require("jsonwebtoken");
+let seed = "esta-es-una-semilla-para-generar-el-token";
+
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, x-cliente-key, x-client-token, x-client-secret, Authorization",
+  );
+  next();
+});
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -43,6 +56,73 @@ function handleDisconnect() {
 }
 
 handleDisconnect();
+
+
+app.post('/usuarios', (req, res) => {
+  const { name, email, img, role } = req.body;
+  let hashedPassword = bcrypt.hashSync(req.body.password, 10);
+
+  const sql = `INSERT INTO usuarios (userName, userEmail, userPassword, userImg, userRole) VALUES (?, ?, ?, ?, ?)`;
+  conn.query(sql, [name, email, hashedPassword, img, role], (err, result) => {
+    if (err) throw err;
+    res.status(201).json({
+      ok: true,
+      mensaje: 'Usuario registrado correctamente'
+    });
+  });
+})
+
+app.post('/login', (req, res) => {
+  const { email } = req.body;
+  let hashedPassword = bcrypt.hashSync(req.body.password, 10);
+  const sql = `SELECT * FROM usuarios WHERE userEmail = ?`;
+  conn.query(sql, [email], (err, results) => {
+    if (err) throw err;
+    if (results.length === 0) {
+      return res.status(404).json({
+        ok: false,
+        mensaje: 'Usuario no encontrado'
+      });
+    } else {
+      const user = results[0];
+      if (!bcrypt.compareSync(req.body.password, user.userPassword)) {
+        return res.status(401).json({
+          ok: false,
+          mensaje: 'Contraseña incorrecta'
+        });
+      }
+
+      const token = jwt.sign({ usuario:user }, seed, { expiresIn: 14400 });
+      res.status(200).json({
+        ok: true,
+        mensaje: 'Login exitoso',
+        token: token
+      });
+    }
+  });
+});
+
+app.use(function (req, res, next) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if(!token) {
+    return res.status(401).json({
+      ok: false,
+      mensaje: 'Token no proporcionado'
+    });
+  }else{
+    jwt.verify(token, seed, (err, decoded) => {
+      if (err) {
+        return res.status(401).json({
+          ok: false,
+          mensaje: 'Token inválido'
+        });
+      }
+      req.usuario = decoded.usuario;
+      next(); 
+    });
+  }
+});
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -214,6 +294,7 @@ app.get('/existeproducto/:code', (req, res) => {
     });
   });
 });
+
 
 app.listen(3000, () => {
   console.log("Express Server -- Puerto 3000 online: http://localhost:3000/");

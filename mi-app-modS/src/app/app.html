@@ -1,48 +1,115 @@
-<nav class="navbar navbar-expand navbar-dark bg-primary mb-4">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">
-      <img src="acme_logo.png" width="200" alt="ACME Logo">
-    </a>
-    <span class="navbar-text h4 mb-0 text-white">
-      {{ title() }}
-    </span>
-  </div>
-</nav>
+<!DOCTYPE html>
+<html lang="en">
 
-<div class="container-fluid">
-  <div class="card mb-4 shadow-sm">
-    <div class="card-body">
-      <div class="row">
-        <div class="col-md-2"> Filtrar por: </div>
-        <div class="col-md-2">
-          <input type="text" [(ngModel)]="listFilter">
-        </div>
-        <div class="col-md-4">
-          Filtrado por: {{listFilter()}}
-        </div>
-        <div class="col-md-2">
-          <button class="btn btn-primary" (click)="abrirModal()">
-            Crear Producto
-          </button>
-        </div>
-        <div class="col-md-2">
-          <button class="btn btn-primary" (click)="toggleChildren()">
-            <i class="bi bi-eye"></i>
-            {{ showChildren() ? "Ocultar" : "Mostrar" }} Hijo
-          </button>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>Simple Sidebar - Start Bootstrap Template</title>
+</head>
+
+<body>
+  @if(!authService.isAuthenticated()){
+  <app-login></app-login>
+  }
+
+  @if(authService.isAuthenticated()){
+  <div class="d-flex" id="wrapper">
+
+    <!-- Sidebar -->
+    <!----------------------------------------------------->
+    <div class="bg-light border-end" id="sidebar-wrapper">
+      <div class="sidebar-heading">
+        <div class="user-panel">
+          <div class="image">
+            <img width="100" alt="ACME Logo" class="rounded-circle" src="acme_logo.png">
+          </div>
+          <div>
+            <p id="titulo">{{ title() }}</p>
+          </div>
         </div>
       </div>
+
+      <!-- Menu -->
+      <div class="sidebar left ">
+        <ul class="list-sidebar bg-defoult">
+          <li><a [routerLink]="['home']"><i class="bi bi-house-door-fill"></i>Home</a>
+          </li>
+          <li>
+            <a href="#" data-bs-toggle="collapse" data-bs-target="#productos" class="collapsed active">
+              <i class="bi bi-grid-fill"></i>
+              <span class="nav-label">Productos</span>
+              <span class="bi bi-chevron-right"></span>
+            </a>
+            <ul class="sub-menu collapse" id="productos">
+              <li><a [routerLink]="['products']"><i class="bi bi-cart-fill"></i>Administrar</a></li>
+              <li><a href="">Ver fichas</a></li>
+              <li><a href=""> Informes</a></li>
+            </ul>
+          </li>
+          <li> <a href="#"><i class="bi bi-speedometer"></i><span class="nav-label">Dashboard</span></a> </li>
+          <li> <a href="#" data-bs-toggle="collapse" data-bs-target="#usuarios" class="collapsed active"><i
+                class="bi bi-person"></i> <span class="nav-label">Usuarios</span><span
+                class="bi bi-chevron-right"></span></a>
+            <ul class="sub-menu collapse" id="usuarios">
+              <li><a href=""> Administrar</a></li>
+              <li><a href=""> Ver fichas</a></li>
+              <li><a href=""> Informes</a></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
     </div>
+
+    <!-- /#sidebar-wrapper -->
+
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+
+      <!-- Superior Bar -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+
+        <!-- Superior menu -->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
+            <li class="nav-item active">
+              <a class="nav-link" href="#">Home <span class="sr-only"></span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                Dropdown
+              </a>
+              <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="#">Action</a>
+                <a class="dropdown-item" href="#">Another action</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">Something else here</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Inner Content -->
+      <br>
+      <div class="container-fluid">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+    <!-- /#page-content-wrapper -->
+
   </div>
-  <div class="row">
-    <div class="col-md-2"></div>
-  </div>
-  @if(isModalOpen()) {
-  <app-modal-add (close)="cerrarModal()"></app-modal-add>
+  <!-- /#wrapper -->
+
   }
-  @if(showChildren()){
-  <app-product-list [datos]="filteredProducts()"
-    (updatedProducts)="this.productService.products.set($event)">
-  </app-product-list>
-  }
-  <br>
+
+
+</body>
+
+</html>
