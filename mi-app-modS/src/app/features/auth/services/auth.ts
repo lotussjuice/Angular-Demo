@@ -9,6 +9,10 @@ export class Auth {
   isAuthenticated = signal(false);
   private http = inject(HttpClient);
 
+  public constructor() {
+    this.isAuthenticated.set(!!localStorage.getItem("token"));
+  }
+  
   login(email: string, password: string) {
     let userLogin = { email: email, password: password };
     return this.http.post("/api/login", userLogin).pipe(
