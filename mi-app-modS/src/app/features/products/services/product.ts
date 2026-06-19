@@ -3,6 +3,7 @@ import { Product } from "../interfaces/product";
 import { HttpClient } from '@angular/common/http';
 import { Observable, timer } from "rxjs";
 import { map, switchMap } from 'rxjs/operators';
+import { environment } from '../../../../environments/environment';
 
 
 @Injectable({
@@ -10,13 +11,14 @@ import { map, switchMap } from 'rxjs/operators';
 })
 export class ProductService {
   products = signal<Product[]>([]);
+  private apiUrl = environment.apiEndpoint;
 
   constructor(private http: HttpClient) {}
   
   getProducts(): Observable<Product[]> {
     let token = localStorage.getItem("token") || '';
     console.log('Fetching products from API with token:', token);
-    return this.http.get<Product[]>(`http://localhost:3000/productos`, {
+    return this.http.get<Product[]>(`${this.apiUrl}/productos`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -26,7 +28,7 @@ export class ProductService {
   }
 
   deleteProduct(id: number): Observable<void>{
-    return this.http.delete<void>(`http://localhost:3000/productos/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/productos/${id}`);
   }
 
   generateProductCode(): string {
@@ -35,16 +37,16 @@ export class ProductService {
   }
 
   saveProduct(product: Product): Observable<Product> {
-    return this.http.post<Product>(`http://localhost:3000/productos`, product);
+    return this.http.post<Product>(`${this.apiUrl}/productos`, product);
   }
 
   updateProduct(id: number, product: Product): Observable<Product> {
-    return this.http.put<Product>(`http://localhost:3000/productos/${id}`, product);
+    return this.http.put<Product>(`${this.apiUrl}/productos/${id}`, product);
   }
 
   searchProduct(code: string){
     return timer(1000).pipe(switchMap(() => {
-      return this.http.get<any>(`http://localhost:3000/existeproducto/${code}`).pipe(
+      return this.http.get<any>(`${this.apiUrl}/existeproducto/${code}`).pipe(
         map((resp: any) => resp.data)
       );
     }));

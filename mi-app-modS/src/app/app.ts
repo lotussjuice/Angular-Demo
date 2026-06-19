@@ -5,7 +5,7 @@ import { ProductComponent } from "./features/products/components/product/product
 import { RouterLink, RouterOutlet } from "@angular/router";
 import { Router } from '@angular/router';
 import { Login } from "./features/auth/components/login/login";
-import { Auth } from "./features/auth/services/auth";
+import { Auth as authService} from "./features/auth/services/auth";
 
 
 @Component({
@@ -18,7 +18,7 @@ import { Auth } from "./features/auth/services/auth";
 
 export class App {
   protected readonly title = signal("mi-app-modS");  
-  public authService = inject(Auth);
+  public authService = inject(authService);
   
   constructor(private router: Router){}
 

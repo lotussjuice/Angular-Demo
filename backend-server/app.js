@@ -28,11 +28,11 @@ let conn;
 
 function handleDisconnect() {
   conn = mysql.createConnection({
-    host: process.env.DB_HOST || "db",
-    user: process.env.DB_USER || "admin",
+    host: process.env.DB_HOST || "localhost",
+    user: process.env.DB_USER || "root",
     password: process.env.DB_PASSWORD || "1234",
     database: process.env.DB_NAME || "angular_db",
-    port: 3306,
+    port: parseInt(process.env.DB_PORT || "3306"),
   });
 
   conn.connect((err) => {

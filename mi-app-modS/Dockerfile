@@ -1,7 +1,12 @@
-FROM node:20
+ARG BUILD_CONFIG=production
+FROM node:latest AS node
 WORKDIR /app
-COPY package*.json ./
+COPY ./ ./
 RUN npm install
-COPY . .
-EXPOSE 4200
-CMD ["npm", "start", "--", "--host", "0.0.0.0"]
+RUN npm run build -- --configuration ${BUILD_CONFIG}
+
+FROM nginx:alpine
+COPY --from=node /app/dist/mi-app-modS/browser /usr/share/nginx/html
+COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

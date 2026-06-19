@@ -38,7 +38,10 @@ services:
       - ./backend-server/uploads:/my_app/uploads
 
   frontend:
-    build: ./mi-app-modS
+    build:
+      context: ./mi-app-modS
+      args:
+        - BUILD_CONFIG=development
     container_name: angular_app
     ports:
       - "8001:80"

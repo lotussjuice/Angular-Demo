@@ -44,8 +44,8 @@
             </a>
             <ul class="sub-menu collapse" id="productos">
               <li><a [routerLink]="['products']"><i class="bi bi-cart-fill"></i>Administrar</a></li>
-              <li><a href="">Ver fichas</a></li>
-              <li><a href=""> Informes</a></li>
+              <li><a [routerLink]="['numbers']"><i class="bi bi-list-numbers"></i> Ver fichas</a></li>
+              <li><a [routerLink]="['product-pagination']"><i class="bi bi-table"></i> Informes</a></li>
             </ul>
           </li>
           <li> <a href="#"><i class="bi bi-speedometer"></i><span class="nav-label">Dashboard</span></a> </li>
@@ -53,8 +53,8 @@
                 class="bi bi-person"></i> <span class="nav-label">Usuarios</span><span
                 class="bi bi-chevron-right"></span></a>
             <ul class="sub-menu collapse" id="usuarios">
-              <li><a href=""> Administrar</a></li>
-              <li><a href=""> Ver fichas</a></li>
+              <li><a [routerLink]="['users']"> Administrar</a></li>
+              <li><a [routerLink]="['maps']"> Ver mapas</a></li>
               <li><a href=""> Informes</a></li>
             </ul>
           </li>
@@ -68,7 +68,7 @@
     <!-- Page Content -->
     <div id="page-content-wrapper">
 
-      <!-- Superior Bar -->
+      @if(authService.isAuthenticated()){
       <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
 
         <!-- Superior menu -->
@@ -89,12 +89,15 @@
                 <a class="dropdown-item" href="#">Action</a>
                 <a class="dropdown-item" href="#">Another action</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">Something else here</a>
+                <a class="dropdown-item" href="#" (click)="authService.logout()">Logout</a>
               </div>
             </li>
           </ul>
         </div>
       </nav>
+      }
+      <!-- Superior Bar -->
+
 
       <!-- Inner Content -->
       <br>
