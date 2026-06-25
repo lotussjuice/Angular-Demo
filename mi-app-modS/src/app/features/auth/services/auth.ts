@@ -37,5 +37,18 @@ export class Auth {
     this.router.navigate(["/login"]);
   }
 
+  public loginGoogle(token: string) {
+    const header = { 'Content-Type': 'application/json' };
+    let googleToken = { token: token };
+    return this.http.post(`${this.apiUrl}/google-login`, googleToken, { headers: header }).pipe(
+      map((resp: any) => {
+        console.log('Login with Google successful:', resp);
+        localStorage.setItem('token', resp.token);
+        localStorage.setItem('usuario', JSON.stringify(resp.usuario));
+        this.isAuthenticated.set(true);
+        this.router.navigate(['/home']);
+      }));
+  }
+
 }
 

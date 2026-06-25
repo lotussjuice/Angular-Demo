@@ -8,6 +8,7 @@ import { Number } from './features/numbers/components/number/number';
 import { User } from './features/users/components/user/user';
 import { ProductPagination } from './features/products/components/product-pagination/product-pagination';
 import { Map } from './features/maps/components/map/map';
+import { ProductSales } from './features/dashboards/components/product-sales/product-sales';
 
 import { loginGuard } from './features/auth/guards/login-guard';
 
@@ -19,6 +20,7 @@ export const routes: Routes = [
     { path: 'users', component: User, canActivate: [loginGuard]},
     { path: 'product-pagination', component: ProductPagination, canActivate: [loginGuard] },
     { path: 'maps', component: Map, canActivate: [loginGuard] },
+    { path: 'products-sales', component: ProductSales, canActivate: [loginGuard] },
 
     { path: '', redirectTo: '/home', pathMatch: 'full'},
     { path: '**', component: PageNotFound}

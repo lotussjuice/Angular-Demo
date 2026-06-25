@@ -11,13 +11,14 @@
                 </div>
 
                 <div class="modal-body">
+                    <!-- Nombre -->
                     <div class="form-group row">
                         <label class="col-2 col-form-label">Nombre</label>
                         <div class="col-md-10">
-                            <input formControlName="name" class="form-control" placeholder="Nombre" type="text">
-                            @if(formProduct.get('name')?.errors &&
-                            (formProduct.get('name')?.touched || 
-                            formProduct.get('name')?.dirty)){
+                            <input formControlName="productName" class="form-control" placeholder="Nombre" type="text">
+                            @if(formProduct.get('productName')?.errors &&
+                            (formProduct.get('productName')?.touched || 
+                            formProduct.get('productName')?.dirty)){
                                 <div class="alert alert-danger">
                                     El nombre del producto es requerido.
                                 </div>
@@ -29,14 +30,28 @@
                     <div class="form-group row">
                         <label class="col-2 col-form-label">Código</label>
                         <div class="col-md-10">
-                            <input formControlName="code" class="form-control" placeholder="Código" type="text">
-                            @if(formProduct.get('code')?.pending){
+                            <input formControlName="productCode" class="form-control" placeholder="Código" type="text">
+                            @if(formProduct.get('productCode')?.pending){
                                 <span class="text-info"> Buscando... </span>
                             }
-                            @if (formProduct.get('code')?.errors && formProduct.get('code')?.errors?.['codeExists']) {
-                                <div class="alert alert-danger">
-                                    El código del producto ya existe.
-                                </div>
+                            @if(formProduct.get('productCode')?.errors &&
+                            (formProduct.get('productCode')?.touched || 
+                            formProduct.get('productCode')?.dirty)){
+                                @if(formProduct.get('productCode')?.errors?.['required']){
+                                    <div class="alert alert-danger">
+                                        El código del producto es requerido.
+                                    </div>
+                                }
+                                @if(formProduct.get('productCode')?.errors?.['minlength']){
+                                    <div class="alert alert-danger">
+                                        El código debe tener al menos 7 caracteres.
+                                    </div>
+                                }
+                                @if(formProduct.get('productCode')?.errors?.['codeExists']){
+                                    <div class="alert alert-danger">
+                                        El código del producto ya existe.
+                                    </div>
+                                }
                             }
                         </div>
                     </div>
@@ -45,8 +60,15 @@
                     <div class="form-group row">
                         <label class="col-2 col-form-label">Fecha</label>
                         <div class="col-md-10">
-                            <input formControlName="date" type="date" class="form-control"
+                            <input formControlName="releaseDate" type="date" class="form-control"
                                 placeholder="Fecha de Registro">
+                            @if(formProduct.get('releaseDate')?.errors &&
+                            (formProduct.get('releaseDate')?.touched || 
+                            formProduct.get('releaseDate')?.dirty)){
+                                <div class="alert alert-danger">
+                                    La fecha de registro es requerida.
+                                </div>
+                            }
                         </div>
                     </div>
 
@@ -55,6 +77,13 @@
                         <label class="col-2 col-form-label">Precio</label>
                         <div class="col-md-10">
                             <input formControlName="price" type="number" class="form-control" placeholder="Precio">
+                            @if(formProduct.get('price')?.errors &&
+                            (formProduct.get('price')?.touched || 
+                            formProduct.get('price')?.dirty)){
+                                <div class="alert alert-danger">
+                                    El precio es requerido.
+                                </div>
+                            }
                         </div>
                     </div>
 
@@ -62,7 +91,22 @@
                     <div class="form-group row">
                         <label class="col-2 col-form-label">Rating</label>
                         <div class="col-md-10">
-                            <input formControlName="rating" type="number" class="form-control" placeholder="Rating">
+                            <input formControlName="starRating" type="number" class="form-control" placeholder="Rating (0-200)">
+                            @if(formProduct.get('starRating')?.errors &&
+                            (formProduct.get('starRating')?.touched || 
+                            formProduct.get('starRating')?.dirty)){
+                                @if(formProduct.get('starRating')?.errors?.['required']){
+                                    <div class="alert alert-danger">
+                                        El rating es requerido.
+                                    </div>
+                                }
+                                @if(formProduct.get('starRating')?.errors?.['min'] || 
+                                    formProduct.get('starRating')?.errors?.['max']){
+                                    <div class="alert alert-danger">
+                                        El rating debe estar entre 0 y 200.
+                                    </div>
+                                }
+                            }
                         </div>
                     </div>
 
@@ -71,6 +115,13 @@
                         <label class="col-2 col-form-label">Descripción</label>
                         <div class="col-md-10">
                             <textarea formControlName="description" class="form-control" placeholder="Descripción"></textarea>
+                            @if(formProduct.get('description')?.errors &&
+                            (formProduct.get('description')?.touched || 
+                            formProduct.get('description')?.dirty)){
+                                <div class="alert alert-danger">
+                                    La descripción es requerida.
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>

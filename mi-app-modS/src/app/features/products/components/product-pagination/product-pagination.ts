@@ -1,10 +1,10 @@
 import { Component, signal, computed } from "@angular/core";
 import { faker } from "@faker-js/faker";
-import { DatePipe, NgFor, NgClass } from "@angular/common";
+import { DatePipe, NgClass } from "@angular/common";
 
 @Component({
   selector: "app-product-pagination",
-  imports: [DatePipe, NgFor, NgClass],
+  imports: [DatePipe, NgClass],
   templateUrl: "./product-pagination.html",
   styleUrl: "./product-pagination.css",
 })

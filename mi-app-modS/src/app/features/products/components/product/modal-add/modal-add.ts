@@ -1,7 +1,8 @@
-import { Component, inject, output} from "@angular/core";
+import { Component, inject, output, EventEmitter, Output} from "@angular/core";
 import { FormBuilder, Validators, ReactiveFormsModule, AbstractControl } from "@angular/forms";
 import { ProductService } from "../../../services/product";
-import { map, Observable } from "rxjs";
+import { Product } from "../../../interfaces/product";
+import { map, Observable, catchError, of } from "rxjs";
 
 @Component({
   selector: "app-modal-add",
@@ -12,20 +13,40 @@ import { map, Observable } from "rxjs";
 export class ModalAdd {
 
   close = output<void>();
+  @Output() save = new EventEmitter<Product>();
   private fb = inject(FormBuilder);
   private productService = inject(ProductService);
 
   formProduct = this.fb.group({
-    name: ['', Validators.required],
-    code: ['', [Validators.required, Validators.minLength(7), this.codeValidator()]],
-    date: ['', Validators.required],
+    productName: ['', Validators.required],
+    productCode: ['', [Validators.required, Validators.minLength(7), this.codeValidator()]],
+    releaseDate: ['', Validators.required],
     price: [0, Validators.required],
     description: ['', Validators.required],
-    rating: [0, [Validators.required, Validators.min(0), Validators.max(200)]],
+    starRating: [0, [Validators.required, Validators.min(0), Validators.max(200)]],
+    imageUrl: [''],
   });
 
   saveData(){
-    console.log('Guardando producto: ', this.formProduct.value);
+    if (this.formProduct.valid) {
+      const product: Product = {
+        productId: 0,
+        productName: this.formProduct.value.productName || '',
+        productCode: this.formProduct.value.productCode || '',
+        releaseDate: this.formProduct.value.releaseDate || '',
+        price: this.formProduct.value.price || 0,
+        description: this.formProduct.value.description || '',
+        starRating: this.formProduct.value.starRating || 0,
+        imageUrl: this.formProduct.value.imageUrl || '',
+      };
+      this.productService.saveProduct(product).subscribe({
+        next: () => {
+          this.save.emit(product);
+          this.ocultarModal();
+        },
+        error: (err) => console.error('Error al guardar:', err)
+      });
+    }
   }
 
   ocultarModal(): void{
@@ -35,17 +56,19 @@ export class ModalAdd {
   codeValidator(){
     return (control: AbstractControl): Observable<{ [key: string]: any } | null > => {
       let code = control.value;
-      console.log('cliente - code: ', code);
+      if (!code || code.length < 7) {
+        return of(null);
+      }
       return this.productService.searchProduct(code)
-        .pipe(map(res => {
-          if(res){
-            console.log('Codigo encontrado: ', res);
-            return { codeExists: true};
-          }
-
-          console.log('Codigo no encontrado');
-          return null;
-        }))
+        .pipe(
+          map(res => {
+            if(res){
+              return { codeExists: true};
+            }
+            return null;
+          }),
+          catchError(() => of(null))
+        )
     }
   }
 }

@@ -1,3 +1,4 @@
+require('dotenv').config({ path: __dirname + '/../.env' });
 var express = require("express");
 var mysql = require("mysql2");
 var fireUpload = require("express-fileupload");
@@ -8,6 +9,9 @@ var app = express();
 
 var jwt = require("jsonwebtoken");
 let seed = "esta-es-una-semilla-para-generar-el-token";
+
+const { OAuth2Client } = require('google-auth-library');
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -102,6 +106,78 @@ app.post('/login', (req, res) => {
   });
 });
 
+// Verificar el token de Google
+async function verifyGoogleToken(token) {
+  const client = new OAuth2Client(GOOGLE_CLIENT_ID);
+  const ticket = await client.verifyIdToken({
+    idToken: token,
+    audience: GOOGLE_CLIENT_ID,
+  });
+  const payload = ticket.getPayload();
+  console.log(payload);
+  return {
+    name: payload.name,
+    email: payload.email,
+    picture: payload.picture
+  };
+}
+
+// Login con Google
+app.post('/google-login', async (req, res) => {
+  const { token: googletoken } = req.body;
+  console.log('Token recibido: ' + googletoken);
+  try {
+    const { name, email, picture } = await verifyGoogleToken(googletoken);
+    conn.query('SELECT * FROM usuarios WHERE userEmail = ?', [email], (err, results) => {
+      if (err) {
+        return res.status(500).json({
+          ok: false,
+          mensaje: 'Error al consultar la base de datos',
+          error: err
+        });
+      }
+      if (results.length === 0 || !results.length) {
+        console.log('Usuario no encontrado -> creando nuevo usuario');
+        let datosUsuario = {
+          userName: name,
+          userEmail: email,
+          userImg: picture,
+        };
+        conn.query('INSERT INTO usuarios SET ?', datosUsuario, (err, result) => {
+          if (err) {
+            return res.status(500).json({
+              ok: false,
+              mensaje: 'Error al crear el usuario',
+              error: err
+            });
+          }
+          res.status(201).json({
+            ok: true,
+            mensaje: 'Usuario creado correctamente'
+          });
+        });
+      } else {
+        console.log('Usuario encontrado');
+        console.log('Generar token para el usuario');
+        const user = results[0];
+        const token = jwt.sign({ usuario: user }, seed, { expiresIn: 14400 });
+        res.status(200).json({
+          ok: true,
+          mensaje: 'Login exitoso',
+          usuario: user,
+          token: token
+        });
+      }
+    });
+  } catch (error) {
+    res.status(401).json({
+      ok: false,
+      mensaje: 'Token no válido',
+      error: error
+    });
+  }
+});
+
 app.use(function (req, res, next) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
@@ -175,16 +251,16 @@ app.get("/productos/:id", (req, res) => {
   });
 });
 
-// Listar productos x filtrado
+// Crear producto
 app.post("/productos", (req, res) => {
-  const { name, code, date, price, description, rate, image } = req.body;
+  const { productName, productCode, releaseDate, price, description, starRating, imageUrl } = req.body;
   const sql = `INSERT INTO productos 
         (productName, productCode, releaseDate, price, description, starRating, imageUrl) 
         VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
   conn.query(
     sql,
-    [name, code, date, parseInt(price), description, parseFloat(rate), image],
+    [productName, productCode, releaseDate, parseInt(price), description, parseFloat(starRating) || 0, imageUrl || ''],
     (err, result) => {
       if (err) {
         return res.status(500).json({
@@ -216,10 +292,10 @@ app.delete("/productos/:id", (req, res) => {
 
 // Actualiza un producto específico en la BD
 app.put('/productos/:id', (req, res) => {
-    const { name, code, date, price, description, rate } = req.body;
+    const { productName, productCode, releaseDate, price, description, starRating } = req.body;
     const sql = `UPDATE productos SET productName = ?, productCode = ?, releaseDate = ?, price = ?, description = ?, starRating = ? WHERE productId = ?`;
     conn.query(
-        sql, [name, code, date, parseInt(price), description, parseInt(rate), req.params.id], (err, result) => {
+        sql, [productName, productCode, releaseDate, parseInt(price), description, parseFloat(starRating) || 0, req.params.id], (err, result) => {
             if (err) throw err;
             res.status(200).json({
                 ok: true,
@@ -289,8 +365,8 @@ app.get('/existeproducto/:code', (req, res) => {
     if(err) throw err;
     res.status(200).json({
       ok: true,
-      data: results[0],
-      existe: results.length > 0
+      data: result[0],
+      existe: result.length > 0
     });
   });
 });

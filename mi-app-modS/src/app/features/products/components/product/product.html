@@ -27,7 +27,7 @@
     <div class="col-md-2"></div>
   </div>
   @if(isModalOpen()) {
-  <app-modal-add (close)="cerrarModal()"></app-modal-add>
+  <app-modal-add (close)="cerrarModal()" (save)="onProductSaved()"></app-modal-add>
   }
   @if(showChildren()){
   <app-product-list [datos]="filteredProducts()"

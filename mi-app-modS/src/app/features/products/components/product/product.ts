@@ -32,6 +32,10 @@ export class ProductComponent {
     this.isModalOpen.set(false);
   }
 
+  onProductSaved(){
+    this.productService.getProducts().subscribe(products => this.productService.products.set(products));
+  }
+
   filteredProducts = computed(() =>
     this.productService.products().filter((p) =>
       p.productName.toLowerCase().includes(this.listFilter().toLowerCase()),

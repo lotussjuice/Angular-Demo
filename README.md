@@ -62,6 +62,7 @@ Usa `BUILD_CONFIG=development` para el frontend (sin optimizaciones, con source 
 ```bash
 cd backend-server
 npm install
+npm run seed    # Poblar base de datos con datos de prueba
 node app.js
 ```
 
@@ -69,11 +70,41 @@ node app.js
 
 ```bash
 cd mi-app-modS
-npm install
+npm install --force
 npm start
 ```
 
 Frontend en `http://localhost:4200`, proxy API a `http://localhost:3000`.
+
+## Credenciales de prueba
+
+El seeder crea automáticamente los siguientes usuarios:
+
+| Usuario | Email | Password | Rol |
+|---------|-------|----------|-----|
+| Admin | admin@acme.com | admin123 | admin |
+| Miguel | miguel@gmail.com | miguel123 | admin |
+| Test User | test@gmail.com | test123 | user |
+| Carlos Garcia | carlos@gmail.com | carlos123 | user |
+| Ana Lopez | ana@gmail.com | ana123 | user |
+
+## Seeder de datos
+
+El seeder (`backend-server/seed.js`) inserta datos iniciales:
+
+- **12 productos** de tecnología con rating en escala 0-200
+- **5 usuarios** con diferentes roles
+
+### Ejecutar seed manualmente
+
+```bash
+cd backend-server
+npm run seed
+```
+
+### Ejecutar seed en Docker
+
+El seed se ejecuta automáticamente al levantar el contenedor backend.
 
 ## Comandos útiles
 
@@ -84,6 +115,7 @@ Frontend en `http://localhost:4200`, proxy API a `http://localhost:3000`.
 | `docker compose down` | Detener todos los servicios |
 | `docker compose logs -f` | Ver logs en tiempo real |
 | `docker compose down -v` | Detener y eliminar volúmenes (borra datos MySQL) |
+| `cd backend-server && npm run seed` | Ejecutar seed manualmente |
 
 ## Estructura del frontend
 
@@ -91,6 +123,7 @@ Frontend en `http://localhost:4200`, proxy API a `http://localhost:3000`.
 mi-app-modS/src/app/
 ├── features/
 │   ├── auth/          # Login, guards
+│   ├── dashboards/    # Gráficos NGX-Charts
 │   ├── home/          # Bienvenida
 │   ├── maps/          # Google Maps interactivo
 │   ├── products/      # CRUD productos + paginación
@@ -102,6 +135,6 @@ mi-app-modS/src/app/
 
 ## Stack tecnológico
 
-- **Frontend:** Angular 21, Bootstrap 5, Google Maps, ngx-pagination
-- **Backend:** Express.js, MySQL 8.0
+- **Frontend:** Angular 21, Bootstrap 5, Google Maps, NGX-Charts
+- **Backend:** Express.js, MySQL 8.0, JWT, bcrypt
 - **Infraestructura:** Docker, Nginx

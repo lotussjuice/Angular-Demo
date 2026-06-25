@@ -14,21 +14,24 @@ export class ProductService {
   private apiUrl = environment.apiEndpoint;
 
   constructor(private http: HttpClient) {}
+
+  private getAuthHeaders() {
+    let token = localStorage.getItem("token") || '';
+    return { 'Authorization': `Bearer ${token}` };
+  }
   
   getProducts(): Observable<Product[]> {
-    let token = localStorage.getItem("token") || '';
-    console.log('Fetching products from API with token:', token);
     return this.http.get<Product[]>(`${this.apiUrl}/productos`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers: this.getAuthHeaders()
     }).pipe(
       map((resp: any) => resp.productos)
     );
   }
 
   deleteProduct(id: number): Observable<void>{
-    return this.http.delete<void>(`${this.apiUrl}/productos/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/productos/${id}`, {
+      headers: this.getAuthHeaders()
+    });
   }
 
   generateProductCode(): string {
@@ -37,16 +40,22 @@ export class ProductService {
   }
 
   saveProduct(product: Product): Observable<Product> {
-    return this.http.post<Product>(`${this.apiUrl}/productos`, product);
+    return this.http.post<Product>(`${this.apiUrl}/productos`, product, {
+      headers: this.getAuthHeaders()
+    });
   }
 
   updateProduct(id: number, product: Product): Observable<Product> {
-    return this.http.put<Product>(`${this.apiUrl}/productos/${id}`, product);
+    return this.http.put<Product>(`${this.apiUrl}/productos/${id}`, product, {
+      headers: this.getAuthHeaders()
+    });
   }
 
   searchProduct(code: string){
     return timer(1000).pipe(switchMap(() => {
-      return this.http.get<any>(`${this.apiUrl}/existeproducto/${code}`).pipe(
+      return this.http.get<any>(`${this.apiUrl}/existeproducto/${code}`, {
+        headers: this.getAuthHeaders()
+      }).pipe(
         map((resp: any) => resp.data)
       );
     }));

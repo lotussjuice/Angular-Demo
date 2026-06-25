@@ -2,7 +2,7 @@ ARG BUILD_CONFIG=production
 FROM node:latest AS node
 WORKDIR /app
 COPY ./ ./
-RUN npm install
+RUN npm install --force
 RUN npm run build -- --configuration ${BUILD_CONFIG}
 
 FROM nginx:alpine
