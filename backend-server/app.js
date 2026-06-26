@@ -13,6 +13,53 @@ let seed = "esta-es-una-semilla-para-generar-el-token";
 const { OAuth2Client } = require('google-auth-library');
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 
+// Nodemailer + Gmail OAuth2
+const nodemailer = require("nodemailer");
+const { google } = require("googleapis");
+
+const EMAIL_CLIENT_ID = process.env.EMAIL_CLIENT_ID;
+const EMAIL_CLIENT_SECRET = process.env.EMAIL_CLIENT_SECRET;
+const EMAIL_REDIRECT_URI = process.env.EMAIL_REDIRECT_URI;
+const EMAIL_REFRESH_TOKEN = process.env.EMAIL_REFRESH_TOKEN;
+
+const OAuth2 = google.auth.OAuth2;
+const oauth2Client = new OAuth2(EMAIL_CLIENT_ID, EMAIL_CLIENT_SECRET, EMAIL_REDIRECT_URI);
+oauth2Client.setCredentials({ refresh_token: EMAIL_REFRESH_TOKEN });
+
+let smtpTransport = null;
+
+async function getAccessToken() {
+  try {
+    const { token } = await oauth2Client.getAccessToken();
+    return token;
+  } catch (error) {
+    console.error("Error al obtener access token de Gmail:", error.message);
+    return null;
+  }
+}
+
+async function initSmtpTransport() {
+  const accessToken = await getAccessToken();
+  if (!accessToken) {
+    console.warn("No se pudo obtener access token. El envío de emails no funcionará.");
+    return;
+  }
+  smtpTransport = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      type: "OAuth2",
+      user: process.env.EMAIL_SENDER,
+      clientId: EMAIL_CLIENT_ID,
+      clientSecret: EMAIL_CLIENT_SECRET,
+      refreshToken: EMAIL_REFRESH_TOKEN,
+      accessToken: accessToken
+    }
+  });
+  console.log("SMTP Transport inicializado correctamente");
+}
+
+initSmtpTransport();
+
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
@@ -188,6 +235,58 @@ app.post('/google-login', async (req, res) => {
       error: error
     });
   }
+});
+
+// Enviar Email de Prueba (ANTES del middleware JWT)
+app.post('/email-test', (req, res) => {
+  if (!smtpTransport) {
+    return res.status(503).json({
+      ok: false,
+      mensaje: 'Servicio de email no disponible (SMTP no inicializado)'
+    });
+  }
+
+  let msg = `
+    <h3>
+      <span style="background-color: #ffcc00;">
+        Envío de Email con NodeJS - Nodemailer y GMail
+      </span>
+    </h3>
+    <p>Este es un <strong> email de ejemplo </strong> utilizando
+      <span style="color: #ff0000;">Nodemailer</span> y <em>NodeJS</em>.
+    </p>
+    <ul>
+      <li>Permite formato HTML</li>
+      <li>Permite adjuntar archivos</li>
+      <li>Se utiliza una cuenta GMail configurada con OAuth2</li>
+    </ul>`;
+
+  const { email_address } = req.body;
+
+  const mailOptions = {
+    from: "Asignatura Angular",
+    to: email_address,
+    subject: "Email de ejemplo con Nodemailer",
+    generateTextFromHTML: true,
+    html: msg
+  };
+
+  smtpTransport.sendMail(mailOptions, (err, response) => {
+    if (err) {
+      console.log(err);
+      return res.status(500).json({
+        ok: false,
+        mensaje: 'Error al enviar email',
+        error: err
+      });
+    }
+    console.log(response);
+    smtpTransport.close();
+    res.status(200).json({
+      ok: true,
+      mensaje: 'Email enviado correctamente'
+    });
+  });
 });
 
 app.use(function (req, res, next) {
