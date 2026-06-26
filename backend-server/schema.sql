@@ -1,0 +1,19 @@
+CREATE TABLE IF NOT EXISTS usuarios (
+  userId INT AUTO_INCREMENT PRIMARY KEY,
+  userName VARCHAR(100) NOT NULL,
+  userEmail VARCHAR(150) UNIQUE NOT NULL,
+  userPassword VARCHAR(255) NOT NULL,
+  userImg VARCHAR(255) NULL,
+  userRole VARCHAR(50) DEFAULT 'user'
+);
+
+CREATE TABLE IF NOT EXISTS productos (
+  productId INT AUTO_INCREMENT PRIMARY KEY,
+  productName VARCHAR(150) NOT NULL,
+  productCode VARCHAR(50) UNIQUE NOT NULL,
+  releaseDate VARCHAR(20),
+  price INT DEFAULT 0,
+  description TEXT,
+  starRating FLOAT DEFAULT 0,
+  imageUrl VARCHAR(255) DEFAULT ''
+);

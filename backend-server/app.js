@@ -142,6 +142,8 @@ app.post('/google-login', async (req, res) => {
           userName: name,
           userEmail: email,
           userImg: picture,
+          userPassword: bcrypt.hashSync('google-auth', 10),
+          userRole: 'user',
         };
         conn.query('INSERT INTO usuarios SET ?', datosUsuario, (err, result) => {
           if (err) {
@@ -151,9 +153,19 @@ app.post('/google-login', async (req, res) => {
               error: err
             });
           }
+          const newUser = {
+            userId: result.insertId,
+            userName: name,
+            userEmail: email,
+            userImg: picture,
+            userRole: 'user',
+          };
+          const token = jwt.sign({ usuario: newUser }, seed, { expiresIn: 14400 });
           res.status(201).json({
             ok: true,
-            mensaje: 'Usuario creado correctamente'
+            mensaje: 'Usuario creado correctamente',
+            usuario: newUser,
+            token: token
           });
         });
       } else {

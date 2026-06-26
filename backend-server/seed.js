@@ -1,6 +1,8 @@
 require('dotenv').config({ path: __dirname + '/../.env' });
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
+const fs = require('fs');
+const path = require('path');
 
 const conn = mysql.createConnection({
   host: process.env.DB_HOST || "localhost",
@@ -17,6 +19,29 @@ conn.connect((err) => {
   }
   console.log('Conectado a MySQL para seed');
 });
+
+const runSchema = () => {
+  return new Promise((resolve, reject) => {
+    const schemaPath = path.join(__dirname, 'schema.sql');
+    const schema = fs.readFileSync(schemaPath, 'utf8');
+    const statements = schema.split(';').filter(s => s.trim().length > 0);
+    
+    let completed = 0;
+    statements.forEach((statement) => {
+      conn.query(statement, (err) => {
+        if (err) {
+          console.error('Error al ejecutar schema:', err.message);
+        } else {
+          completed++;
+        }
+        if (completed === statements.length) {
+          console.log(`Schema ejecutado: ${completed} tablas creadas/verificadas`);
+          resolve();
+        }
+      });
+    });
+  });
+};
 
 // Usuarios seed
 const usuarios = [
@@ -77,6 +102,7 @@ const seedProductos = () => {
 
 const runSeed = async () => {
   try {
+    await runSchema();
     await seedUsuarios();
     await seedProductos();
     console.log('Seed completado exitosamente');
