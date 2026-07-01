@@ -6,6 +6,7 @@ import { PageNotFound } from './features/not-found/page-not-found/page-not-found
 import { Login } from './features/auth/components/login/login';
 import { ForgotPassword } from './features/auth/components/forgot-password/forgot-password';
 import { ResetPassword } from './features/auth/components/reset-password/reset-password';
+import { Register } from './features/auth/components/register/register';
 import { Number } from './features/numbers/components/number/number';
 import { User } from './features/users/components/user/user';
 import { ProductPagination } from './features/products/components/product-pagination/product-pagination';
@@ -20,6 +21,7 @@ export const routes: Routes = [
     { path: 'login', component: Login },
     { path: 'forgot-password', component: ForgotPassword },
     { path: 'reset-password', component: ResetPassword },
+    { path: 'register', component: Register },
     { path: 'numbers', component: Number, canActivate: [loginGuard]},
     { path: 'users', component: User, canActivate: [loginGuard]},
     { path: 'product-pagination', component: ProductPagination, canActivate: [loginGuard] },

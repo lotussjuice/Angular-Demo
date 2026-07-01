@@ -1,0 +1,110 @@
+<div class="container">
+  <div class="omb_login">
+    <h3 class="omb_authTitle">Registrarse</h3>
+
+    <div class="row omb_row-sm-offset-3">
+      <div class="col-12 col-sm-6">
+        @if (successMessage()) {
+          <div class="alert alert-success">
+            <i class="bi bi-check-circle-fill"></i>
+            {{ successMessage() }}
+            <br><small class="text-muted">Serás redirigido al login en unos segundos...</small>
+          </div>
+        }
+
+        @if (errorMessage()) {
+          <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            {{ errorMessage() }}
+          </div>
+        }
+
+        <form class="omb_loginForm" [formGroup]="registerForm" (ngSubmit)="submit()" autocomplete="off">
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-person-fill">&nbsp;</i></span>
+            <input formControlName="name" type="text" class="form-control" placeholder="Nombre">
+          </div>
+
+          @if (registerForm.get('name')?.errors && (registerForm.get('name')?.touched || registerForm.get('name')?.dirty)) {
+            <div class="text-danger mt-1">
+              @if (registerForm.get('name')?.errors?.['required']) {
+                <small>El nombre es obligatorio.</small>
+              }
+              @if (registerForm.get('name')?.errors?.['minlength']) {
+                <small>El nombre debe tener al menos 2 caracteres.</small>
+              }
+            </div>
+          }
+
+          <br>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-envelope-fill">&nbsp;</i></span>
+            <input formControlName="email" type="email" class="form-control" placeholder="Email">
+          </div>
+
+          @if (registerForm.get('email')?.errors && (registerForm.get('email')?.touched || registerForm.get('email')?.dirty)) {
+            <div class="text-danger mt-1">
+              @if (registerForm.get('email')?.errors?.['required']) {
+                <small>El email es obligatorio.</small>
+              }
+              @if (registerForm.get('email')?.errors?.['email']) {
+                <small>Ingrese un email válido.</small>
+              }
+            </div>
+          }
+
+          <br>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-lock-fill">&nbsp;</i></span>
+            <input formControlName="password" type="password" class="form-control" placeholder="Contraseña">
+          </div>
+
+          @if (registerForm.get('password')?.errors && (registerForm.get('password')?.touched || registerForm.get('password')?.dirty)) {
+            <div class="text-danger mt-1">
+              @if (registerForm.get('password')?.errors?.['required']) {
+                <small>La contraseña es obligatoria.</small>
+              }
+              @if (registerForm.get('password')?.errors?.['minlength']) {
+                <small>La contraseña debe tener al menos 6 caracteres.</small>
+              }
+            </div>
+          }
+
+          <br>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-lock-fill">&nbsp;</i></span>
+            <input formControlName="confirmPassword" type="password" class="form-control" placeholder="Confirmar contraseña">
+          </div>
+
+          @if (registerForm.get('confirmPassword')?.errors && (registerForm.get('confirmPassword')?.touched || registerForm.get('confirmPassword')?.dirty)) {
+            <div class="text-danger mt-1">
+              @if (registerForm.get('confirmPassword')?.errors?.['required']) {
+                <small>La confirmación es obligatoria.</small>
+              }
+              @if (registerForm.get('confirmPassword')?.errors?.['passwordMismatch']) {
+                <small>Las contraseñas no coinciden.</small>
+              }
+            </div>
+          }
+
+          <br>
+          <button class="btn btn-lg btn-primary w-100" type="submit" [disabled]="registerForm.invalid || isLoading()">
+            @if (isLoading()) {
+              <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+              Registrando...
+            } @else {
+              Registrarse
+            }
+          </button>
+        </form>
+
+        <br>
+        <div class="text-center">
+          <a routerLink="/login" class="text-decoration-none">
+            <i class="bi bi-arrow-left"></i> Volver al Login
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

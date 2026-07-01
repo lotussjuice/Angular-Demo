@@ -45,6 +45,10 @@ export class Auth {
     return this.http.post(`${this.apiUrl}/reset-password`, { token, newPassword });
   }
 
+  register(name: string, email: string, password: string) {
+    return this.http.post(`${this.apiUrl}/usuarios`, { name, email, password, role: 'user' });
+  }
+
   public loginGoogle(token: string) {
     const header = { 'Content-Type': 'application/json' };
     let googleToken = { token: token };

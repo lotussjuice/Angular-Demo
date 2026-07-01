@@ -23,8 +23,8 @@ export class App {
   constructor(private router: Router){}
 
   isAuthRoute(): boolean {
-    const url = this.router.url;
-    return url === '/login' || url === '/forgot-password' || url === '/reset-password';
+    const path = window.location.pathname;
+    return path === '/login' || path === '/forgot-password' || path.startsWith('/reset-password') || path === '/register';
   }
 
   navegar(){
