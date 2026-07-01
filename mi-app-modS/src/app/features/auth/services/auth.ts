@@ -37,6 +37,14 @@ export class Auth {
     this.router.navigate(["/login"]);
   }
 
+  forgotPassword(email: string) {
+    return this.http.post(`${this.apiUrl}/forgot-password`, { email });
+  }
+
+  resetPassword(token: string, newPassword: string) {
+    return this.http.post(`${this.apiUrl}/reset-password`, { token, newPassword });
+  }
+
   public loginGoogle(token: string) {
     const header = { 'Content-Type': 'application/json' };
     let googleToken = { token: token };

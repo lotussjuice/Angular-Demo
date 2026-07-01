@@ -2,10 +2,11 @@ import { Component, inject, OnInit } from "@angular/core";
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from "@angular/forms";
 import { Auth } from "../../services/auth";
 import { SocialAuthService, GoogleSigninButtonModule, SocialUser } from '@abacritt/angularx-social-login';
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: "app-login",
-  imports: [ReactiveFormsModule, GoogleSigninButtonModule],
+  imports: [ReactiveFormsModule, GoogleSigninButtonModule, RouterLink],
   templateUrl: "./login.html",
   styleUrl: "./login.css",
 })

@@ -289,6 +289,166 @@ app.post('/email-test', (req, res) => {
   });
 });
 
+app.post('/forgot-password', (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({
+      ok: false,
+      mensaje: 'El email es obligatorio'
+    });
+  }
+
+  const sql = 'SELECT userId, userEmail FROM usuarios WHERE userEmail = ?';
+  conn.query(sql, [email], (err, results) => {
+    if (err) {
+      return res.status(500).json({
+        ok: false,
+        mensaje: 'Error al consultar la base de datos'
+      });
+    }
+
+    if (results.length === 0) {
+      return res.status(200).json({
+        ok: true,
+        mensaje: 'Si el email existe, se ha enviado un enlace de recuperación'
+      });
+    }
+
+    const user = results[0];
+
+    const resetToken = jwt.sign(
+      { userId: user.userId, email: user.userEmail, purpose: 'password-reset' },
+      seed,
+      { expiresIn: '15m' }
+    );
+
+    const insertSql = 'INSERT INTO password_reset_tokens (userId, token, expiresAt) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 15 MINUTE))';
+    conn.query(insertSql, [user.userId, resetToken], (err) => {
+      if (err) {
+        return res.status(500).json({
+          ok: false,
+          mensaje: 'Error al generar token de recuperación'
+        });
+      }
+
+      const resetLink = `http://localhost:8001/reset-password?token=${resetToken}`;
+
+      if (!smtpTransport) {
+        return res.status(503).json({
+          ok: false,
+          mensaje: 'Servicio de email no disponible'
+        });
+      }
+
+      const htmlMsg = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color: #333;">Recuperación de Contraseña</h2>
+          <p>Hemos recibido una solicitud para restablecer tu contraseña.</p>
+          <p>Haz clic en el siguiente enlace para crear una nueva contraseña:</p>
+          <a href="${resetLink}" style="display: inline-block; padding: 12px 24px; background-color: #0d6efd; color: white; text-decoration: none; border-radius: 6px; margin: 16px 0;">
+            Restablecer Contraseña
+          </a>
+          <p style="color: #666; font-size: 14px;">Este enlace expirará en 15 minutos.</p>
+          <p style="color: #666; font-size: 14px;">Si no solicitaste este cambio, puedes ignorar este mensaje.</p>
+        </div>`;
+
+      const mailOptions = {
+        from: "Asignatura Angular",
+        to: user.userEmail,
+        subject: "Recuperación de Contraseña",
+        generateTextFromHTML: true,
+        html: htmlMsg
+      };
+
+      smtpTransport.sendMail(mailOptions, (err) => {
+        if (err) {
+          console.log('Error al enviar email:', err);
+          return res.status(500).json({
+            ok: false,
+            mensaje: 'Error al enviar email de recuperación'
+          });
+        }
+        res.status(200).json({
+          ok: true,
+          mensaje: 'Si el email existe, se ha enviado un enlace de recuperación'
+        });
+      });
+    });
+  });
+});
+
+app.post('/reset-password', (req, res) => {
+  const { token, newPassword } = req.body;
+
+  if (!token || !newPassword) {
+    return res.status(400).json({
+      ok: false,
+      mensaje: 'Token y nueva contraseña son obligatorios'
+    });
+  }
+
+  if (newPassword.length < 6) {
+    return res.status(400).json({
+      ok: false,
+      mensaje: 'La contraseña debe tener al menos 6 caracteres'
+    });
+  }
+
+  jwt.verify(token, seed, (err, decoded) => {
+    if (err) {
+      return res.status(400).json({
+        ok: false,
+        mensaje: 'Token inválido o expirado'
+      });
+    }
+
+    if (decoded.purpose !== 'password-reset') {
+      return res.status(400).json({
+        ok: false,
+        mensaje: 'Token inválido'
+      });
+    }
+
+    const checkSql = 'SELECT * FROM password_reset_tokens WHERE token = ? AND used = FALSE AND expiresAt > NOW()';
+    conn.query(checkSql, [token], (err, results) => {
+      if (err) {
+        return res.status(500).json({
+          ok: false,
+          mensaje: 'Error al verificar token'
+        });
+      }
+
+      if (results.length === 0) {
+        return res.status(400).json({
+          ok: false,
+          mensaje: 'Token inválido, ya fue utilizado o expiró'
+        });
+      }
+
+      const hashedPassword = bcrypt.hashSync(newPassword, 10);
+
+      const updateSql = 'UPDATE usuarios SET userPassword = ? WHERE userId = ?';
+      conn.query(updateSql, [hashedPassword, decoded.userId], (err) => {
+        if (err) {
+          return res.status(500).json({
+            ok: false,
+            mensaje: 'Error al actualizar la contraseña'
+          });
+        }
+
+        const markUsedSql = 'UPDATE password_reset_tokens SET used = TRUE WHERE token = ?';
+        conn.query(markUsedSql, [token], () => {
+          res.status(200).json({
+            ok: true,
+            mensaje: 'Contraseña actualizada correctamente'
+          });
+        });
+      });
+    });
+  });
+});
+
 app.use(function (req, res, next) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];

@@ -22,6 +22,11 @@ export class App {
   
   constructor(private router: Router){}
 
+  isAuthRoute(): boolean {
+    const url = this.router.url;
+    return url === '/login' || url === '/forgot-password' || url === '/reset-password';
+  }
+
   navegar(){
     this.router.navigate(['product/product-list']);
   }
