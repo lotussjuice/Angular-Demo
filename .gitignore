@@ -1,0 +1,17 @@
+# Dependencias
+**/node_modules/
+node_modules/
+/.env
+**/.env
+
+# Configuración de Angular
+.angular/
+**/.angular/
+dist/
+**/dist/
+
+# Archivos de sistema y editores
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

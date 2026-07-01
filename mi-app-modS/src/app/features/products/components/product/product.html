@@ -1,0 +1,36 @@
+<div class="container-fluid">
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-2"> Filtrar por: </div>
+        <div class="col-md-2">
+          <input type="text" [(ngModel)]="listFilter">
+        </div>
+        <div class="col-md-4">
+          Filtrado por: {{listFilter()}}
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-primary" (click)="abrirModal()">
+            Crear Producto
+          </button>
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-primary" (click)="toggleChildren()">
+            <i class="bi bi-eye"></i>
+            {{ showChildren() ? "Ocultar" : "Mostrar" }} Hijo
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-2"></div>
+  </div>
+  @if(isModalOpen()) {
+  <app-modal-add (close)="cerrarModal()" (save)="onProductSaved()"></app-modal-add>
+  }
+  @if(showChildren()){
+  <app-product-list [datos]="filteredProducts()"
+    (updatedProducts)="this.productService.products.set($event)">
+  </app-product-list>
+}

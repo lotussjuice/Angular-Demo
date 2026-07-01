@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@angular/cdk": "^21.2.14",
+    "@angular/google-maps": "^21.2.14",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6"
+  }
+}

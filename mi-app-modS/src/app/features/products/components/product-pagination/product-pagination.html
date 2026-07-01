@@ -1,0 +1,52 @@
+<div class="card border-primary mb-3 text-center">
+  <div class="card-header">Lista de Productos</div>
+  <div class="card-body text-primary">
+    <div class="table-responsive">
+      <table class="table" bordered>
+        <thead>
+          <tr>
+            <th>Imagenes</th>
+            <th>Producto</th>
+            <th>Codigo</th>
+            <th>Disponible</th>
+            <th>Precio</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (producto of paginatedProducts(); track producto.productCode) {
+            <tr>
+              <td><img [src]="producto.image" width="50" height="50"></td>
+              <td>{{ producto.productName }}</td>
+              <td>{{ producto.productCode }}</td>
+              <td>{{ producto.createdAt | date: 'dd/MM/yyyy' }}</td>
+              <td>{{ producto.price }}</td>
+              <td>
+                <button class="btn btn-success"><i class="bi bi-eye"></i>Ver</button>
+                &nbsp;
+                <button class="btn btn-warning"><i class="bi bi-pencil"></i>Editar</button>
+                &nbsp;
+                <button class="btn btn-danger"><i class="bi bi-trash"></i>Borrar</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <nav class="pagination-container">
+        <button class="btn btn-outline-primary btn-sm" (click)="previousPage()" [disabled]="currentPage() === 1">
+          &laquo; Previous
+        </button>
+
+        @for (page of pages(); track page) {
+          <button class="btn btn-sm" [ngClass]="page === currentPage() ? 'btn-primary' : 'btn-outline-primary'" (click)="goToPage(page)">
+            {{ page }}
+          </button>
+        }
+
+        <button class="btn btn-outline-primary btn-sm" (click)="nextPage()" [disabled]="currentPage() === totalPages()">
+          Next &raquo;
+        </button>
+      </nav>
+    </div>
+  </div>
+</div>
